@@ -28,6 +28,8 @@ class FeedforwardNeuralNetModel(nn.Module):
         self.fc1 = nn.Linear(input_dim, hidden_dim)
         # Non-linearity
         self.sigmoid = nn.Sigmoid()
+        self.relu = nn.ReLU() 
+        self.dropout = nn.Dropout(0.5)
         # Linear function (readout)
         self.fc2 = nn.Linear(hidden_dim, output_dim)
 
@@ -35,7 +37,9 @@ class FeedforwardNeuralNetModel(nn.Module):
         # Linear function
         out = self.fc1(x)
         # Non-linearity
-        out = self.sigmoid(out)
+        # out = self.sigmoid(out)
+        out = self.relu(out) 
+        out = self.dropout(out) # slight dropout to avoid overfitting
         # Linear function (readout)
         out = self.fc2(out)
         # Returning raw logits without softmax (CrossEntropyLoss can deal w it)
@@ -92,7 +96,7 @@ def main():
     # Using CrossEntropyLoss 
     criterion = nn.CrossEntropyLoss()
     learning_rate = 0.0004
-    optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     iter = 0
 
     for epoch in range(num_epochs):
